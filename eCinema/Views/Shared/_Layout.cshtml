@@ -4,46 +4,147 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - eCinema</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- FontAwesome & Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/eCinema.styles.css" asp-append-version="true" />
 </head>
 <body>
+
+    <!-- Header & Navbar -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">eCinema</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Movies" asp-action="Index">
+                    <i class="bi bi-film fs-4 me-2 text-primary"></i> <span class="fw-bold text-dark">eCinema</span>
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                    <!-- Navigation Links -->
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link custom-btn" asp-controller="Movies" asp-action="Index">
+                                <i class="bi bi-collection-play me-2"></i> Movies
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle custom-btn" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear-wide-connected me-2"></i> Management
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Cinemas" asp-action="Index"><i class="bi bi-building me-2"></i> Cinemas</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Producers" asp-action="Index"><i class="bi bi-people me-2"></i> Producers</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Actors" asp-action="Index"><i class="bi bi-person-video2 me-2"></i> Actors</a></li>
+                                </ul>
+                            </li>
+                        }
+                        
                     </ul>
+
+                    <!-- Search Bar -->
+                    <form class="d-flex me-3" asp-controller="Movies" asp-action="Filter">
+                        <input name="searchString" class="form-control search-bar me-2" type="search" placeholder="Search for a movie...">
+                        <button class="btn custom-btn" type="submit"><i class="bi bi-search"></i></button>
+                    </form>
+
+                    <partial name="_Identity.cshtml" />
+
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <!-- Custom Styles -->
+    <style>
+        /* General Button Style */
+        .custom-btn {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white !important;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 50px;
+            transition: 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+            .custom-btn i {
+                font-size: 18px;
+            }
+
+            .custom-btn:hover {
+                background: linear-gradient(135deg, #0072ff, #00c6ff);
+                transform: scale(1.1);
+                box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+            }
+
+            .custom-btn:active {
+                transform: scale(0.95);
+                box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+            }
+
+        /* Logout Button */
+        .btn-logout {
+            background: linear-gradient(135deg, #ff4b2b, #ff416c);
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s ease-in-out;
+        }
+
+            .btn-logout:hover {
+                background: linear-gradient(135deg, #ff416c, #ff4b2b);
+                transform: scale(1.05);
+                color: white;
+            }
+
+            .btn-logout i {
+                font-size: 20px;
+            }
+
+        /* Spacing & Layout Fixes */
+        body {
+            padding-top: 80px;
+        }
+    </style>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - eCinema - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+ 
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

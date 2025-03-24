@@ -1,0 +1,129 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@inject  UserManager<ApplicationUser> UserManager;
+@if (!User.Identity.IsAuthenticated)
+{
+    <a class="custom-btn me-3" asp-controller="Account" asp-action="Login">
+        <i class="bi bi-box-arrow-in-right"></i> Log In
+    </a>
+    <span style="padding:5px;"></span>
+    <a class="custom-btn me-3" asp-controller="Account" asp-action="Register">
+        <i class="bi bi-box-arrow-in-right"></i> Register
+    </a>
+
+}
+else{
+
+    <!-- زر المستخدم -->
+    <div class="dropdown">
+        <button class="btn custom-btn dropdown-toggle d-flex align-items-center" type="button"
+                id="profile-btn" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i> Hello @UserManager.GetUserName(User)
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile-btn">
+            <li>
+                <a class="dropdown-item custom-btn" asp-controller="Orders" asp-action="Index">
+                    <i class="bi bi-bag-check me-2"></i> Orders
+                </a>
+            </li>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <li>
+                    <a class="dropdown-item custom-btn" asp-controller="Account" asp-action="Users">
+                        <i class="bi bi-people me-2"></i> Users
+                    </a>
+                </li>
+            }
+            
+        </ul>
+    </div>
+    <span style="padding:5px;"></span>
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        <button class="btn btn-logout w-100">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </form>
+}
+
+
+<style>
+    .btn-logout {
+        background: linear-gradient(135deg, #ff4b2b, #ff416c);
+        color: white;
+        font-weight: bold;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* المسافة بين الأيقونة والنص */
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .btn-logout i {
+            font-size: 18px; /* حجم الأيقونة */
+        }
+</style>
+
+<style>
+    /* 🔹 تصميم الزرار بنفس شكل باقي الأزرار */
+    .custom-btn {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white !important;
+        font-weight: bold;
+        padding: 10px 15px;
+        border-radius: 50px;
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+    }
+
+        .custom-btn i {
+            font-size: 18px;
+        }
+
+        .custom-btn:hover {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            transform: scale(1.1);
+            box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+    /* 🔹 تحسين القائمة المنسدلة */
+    .dropdown-menu .custom-btn {
+        background: none;
+        color: black !important;
+        font-weight: normal;
+        padding: 8px 12px;
+        border-radius: 0;
+    }
+
+        .dropdown-menu .custom-btn:hover {
+            background: rgba(0, 114, 255, 0.1);
+            color: #0072ff !important;
+            transform: none;
+            box-shadow: none;
+        }
+
+    /* 🔹 مسافة بين زر تسجيل الدخول وزر المستخدم */
+    .me-3 {
+        margin-right: 15px !important;
+    }
+
+    /* 🔹 لضمان وجود مسافة بين الهيدر والمحتوى */
+    body {
+        padding-top: 80px;
+    }
+</style>

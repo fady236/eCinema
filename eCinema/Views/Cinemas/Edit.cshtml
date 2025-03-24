@@ -1,0 +1,67 @@
+﻿@model Cinema
+
+@{
+    ViewData["Title"] = "Update Cinema";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-3">
+        <h1 class="text-center mb-4">Update Cinema</h1>
+
+        <!-- الصورة مخفية عند تحميل الصفحة -->
+        <div class="form-group text-center mb-4">
+            <img id="CinemaPicturePreview" class="border border-info rounded shadow-lg d-none"
+                 style="max-width: 150px; height: 150px; object-fit: cover;"
+                 alt="Cinema Logo" />
+        </div>
+
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group mb-4">
+                <label asp-for="Logo" class="control-label mb-2"></label>
+                <input asp-for="Logo" class="form-control" id="CinemaPictureUrl" />
+                <span asp-validation-for="Logo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Name" class="control-label mb-2"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Description" class="control-label mb-2"></label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-center mt-3">
+                <input type="submit" value="Update" class="btn btn-outline-success float-right" />
+                <a class="btn btn-outline-secondary" asp-action="Index">Show All Cinemas</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var imageUrl = $("#CinemaPictureUrl").val();
+
+            if (imageUrl.trim() !== "") {
+                $("#CinemaPicturePreview").attr("src", imageUrl).removeClass("d-none");
+            }
+
+            $("#CinemaPictureUrl").on("input", function () {
+                var newUrl = $(this).val().trim();
+
+                if (newUrl !== "") {
+                    $("#CinemaPicturePreview").attr("src", newUrl).removeClass("d-none");
+                } else {
+                    $("#CinemaPicturePreview").addClass("d-none");
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,67 @@
+﻿@model Producer
+
+@{
+    ViewData["Title"] = "Delete Producer";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-3">
+        <h1 class="text-center mb-4">Delete Confirmation for @Model.FullName</h1>
+
+        <!-- الصورة مخفية عند تحميل الصفحة -->
+        <div class="form-group text-center mb-4">
+            <img id="ProducerPicturePreview" class="border border-info rounded-circle shadow-lg d-none"
+                 style="max-width: 150px; height: 150px; object-fit: cover;"
+                 alt="Profile Picture" />
+        </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="ProfilePicUrl" class="control-label mb-2"></label>
+            <input asp-for="ProfilePicUrl" class="form-control" id="ProducerPictureUrl" readonly />
+            <span asp-validation-for="ProfilePicUrl" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="FullName" class="control-label mb-2"></label>
+            <input asp-for="FullName" class="form-control" readonly />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="Biography" class="control-label mb-2"></label>
+            <input asp-for="Biography" class="form-control" readonly />
+            <span asp-validation-for="Biography" class="text-danger"></span>
+        </div>
+
+        <div class="form-group d-flex justify-content-between mt-4">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Confirm" class="btn btn-danger float-right" />
+            </form>
+
+            <a class="btn btn-outline-secondary" asp-action="Index">Show All Producers</a> <!-- ✅ زر الرجوع لقائمة المنتجين -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var imageUrl = $("#ProducerPictureUrl").val();
+
+            if (imageUrl.trim() !== "") {
+                $("#ProducerPicturePreview").attr("src", imageUrl).removeClass("d-none");
+            }
+
+            $("#ProducerPictureUrl").on("input", function () {
+                var newUrl = $(this).val().trim();
+
+                if (newUrl !== "") {
+                    $("#ProducerPicturePreview").attr("src", newUrl).removeClass("d-none");
+                } else {
+                    $("#ProducerPicturePreview").addClass("d-none");
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,190 @@
+﻿@model eCinema.Models.Movie
+
+@{
+    ViewData["Title"] = "Movie Details";
+}
+
+<style>
+    /* تعيين لون خلفية الصفحة */
+    body {
+        background: linear-gradient(45deg, #1a2a3a, #2c3e50);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* كارت الفيلم */
+    .movie-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+    }
+
+    /* هيدر الفيلم */
+    .movie-header {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        padding: 15px;
+        color: white;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    /* أيقونة التعديل */
+    .edit-icon {
+        font-size: 1.3rem;
+        background: white;
+        padding: 8px 12px;
+        border-radius: 50%;
+        transition: 0.3s;
+        color: #ff7e5f;
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+
+        .edit-icon:hover {
+            background: #f0f0f0;
+        }
+
+    /* صورة الفيلم */
+    /* صورة الفيلم */
+    .movie-img {
+        border-radius: 15px;
+        width: 100%;
+        max-height: 400px;
+        object-fit: contain; /* ✅ عرض الصورة بالكامل */
+        background-color: black; /* ✅ تعويض الفراغات */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+
+    /* نص التفاصيل */
+    .movie-body {
+        padding: 20px;
+    }
+
+    /* شارات الحالة */
+    .badge-custom {
+        padding: 8px 15px;
+        font-size: 1rem;
+        border-radius: 50px;
+    }
+
+    /* قائمة الممثلين */
+    .actors-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    /* كارت الممثل */
+    .actor-card {
+        text-align: center;
+        width: 120px;
+        transition: transform 0.3s;
+    }
+
+        .actor-card:hover {
+            transform: scale(1.1);
+        }
+
+        .actor-card img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 3px solid #ffcc00;
+        }
+
+    /* زر الشراء */
+    .btn-custom {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        color: white;
+        font-weight: bold;
+        padding: 10px 15px;
+        border-radius: 50px;
+        transition: all 0.3s;
+        text-align: center;
+        display: inline-block;
+    }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #feb47b, #ff7e5f);
+            transform: scale(1.05);
+        }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="movie-card">
+                <div class="movie-header position-relative">
+                    @Model.Name
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a class="edit-icon" asp-action="Edit" asp-route-id="@Model.Id">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <img src="@Model.ImageUrl" class="movie-img" alt="@Model.Name">
+                    </div>
+                    <div class="col-md-7 movie-body">
+                        <p><b>Description:</b> @Model.Description</p>
+                        <p><b>Cinema:</b> <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@Model.CinemaId">@Model.Cinema.Name</a></p>
+                        <p><b>Producer:</b> <a asp-controller="Producers" asp-action="Details" asp-route-id="@Model.ProducerId">@Model.Producer.FullName</a></p>
+                        <p><b>Category:</b> @Model.MovieCategory</p>
+                        <p><b>Start Date:</b> @Model.StartDate.ToString("dd MMM yy")</p>
+                        <p><b>End Date:</b> @Model.EndDate.ToString("dd MMM yy")</p>
+                        <p>
+                            <b>Status:</b>
+                            @if (DateTime.Now >= Model.StartDate && DateTime.Now <= Model.EndDate)
+                            {
+                                <span class="badge bg-success badge-custom">AVAILABLE</span>
+                            }
+                            else if (DateTime.Now > Model.EndDate)
+                            {
+                                <span class="badge bg-danger badge-custom">EXPIRED</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary badge-custom">UPCOMING</span>
+                            }
+                        </p>
+                        <p><b>Actors:</b></p>
+                        <div class="actors-list">
+                            @foreach (var actor in Model.Actor_Movies)
+                            {
+                                <div class="actor-card">
+                                    <img src="@actor.Actor.ProfilePicUrl" />
+                                    <br />
+                                    <a asp-controller="Actors" asp-action="Details" asp-route-id="@actor.ActorId">@actor.Actor.FullName</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center py-3">
+                    <a class="btn btn-outline-light" asp-action="Index">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                    <a class="btn btn-custom @((DateTime.Now > Model.EndDate) ? "disabled" : "")"
+                       asp-controller="Orders"
+                       asp-action="AddItemToShoppingCart"
+                       asp-route-id="@Model.Id">
+                        <i class="bi bi-cart-plus"></i> Add to Cart (Price @Model.Price.ToString("c"))
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

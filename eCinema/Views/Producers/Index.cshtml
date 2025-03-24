@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Producer>
+@{
+    ViewData["Title"] = "List of Producers";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="table-responsive">
+                <table class="table table-striped text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.ProfilePicUrl)</th>
+                            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                            <th>@Html.DisplayNameFor(model => model.Biography)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img class="img-thumbnail" src="@item.ProfilePicUrl" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;" />
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                                <td class="text-truncate" style="max-width: 250px;">@Html.DisplayFor(modelItem => item.Biography)</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                        {
+                                            <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">
+                                                <i class="bi bi-pencil-square"></i> Edit
+                                            </a>
+                                        }
+                                        
+                                        <a class="btn btn-sm btn-info text-white" asp-action="Details" asp-route-id="@item.Id">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                        {
+                                            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </a>
+                                        }
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_CreateItem", "Movies")
+
+<!-- زر Add New العائم -->
+@await Html.PartialAsync("_CreateItem", "Producers")

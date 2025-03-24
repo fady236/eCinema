@@ -1,0 +1,60 @@
+﻿@model string;
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <style>
+        .floating-add-btn {
+            position: fixed;
+            bottom: 80px; /* رفع الزر حتى لا يتداخل مع الفوتر */
+            right: 20px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 14px 24px;
+            border-radius: 50px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
+            z-index: 1000; /* ضمان ظهوره فوق الفوتر */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .floating-add-btn i {
+                font-size: 22px;
+            }
+
+            .floating-add-btn:hover {
+                background: linear-gradient(135deg, #0072ff, #00c6ff);
+                transform: scale(1.1);
+                box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+            }
+
+            .floating-add-btn:active {
+                transform: scale(0.95);
+                box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+            }
+
+
+
+        {
+            bottom: 60px;
+            right: 15px;
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+
+        .floating-add-btn i {
+            font-size: 20px;
+        }
+
+        }
+    </style>
+
+    <div>
+        <a asp-controller="@Model" asp-action="Create" class="btn floating-add-btn">
+            <i class="bi bi-plus-circle"></i> Add New
+        </a>
+    </div>
+
+}

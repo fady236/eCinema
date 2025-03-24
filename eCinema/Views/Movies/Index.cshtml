@@ -1,0 +1,167 @@
+﻿@model IEnumerable<Movie>
+
+@{
+    ViewData["Title"] = "List of Movies";
+}
+
+<style>
+    /* تنسيق عام */
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* تصميم الكارت */
+    .movie-card {
+        border: none;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease-in-out;
+        background: white;
+        position: relative;
+    }
+
+        /* تأثير عند تمرير الماوس */
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    /* الهيدر داخل الكارت */
+    .movie-card-header {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        padding: 12px;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        text-align: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    /* أيقونة التعديل */
+    .edit-icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background-color: white;
+        padding: 6px;
+        border-radius: 50%;
+        color: #0072ff;
+        transition: 0.3s;
+        text-decoration: none;
+        font-size: 1.2rem;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .edit-icon:hover {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: white;
+        }
+
+    /* ضبط حجم الصور بدون قص */
+    .movie-card img {
+        width: 100%;
+        height: 280px;
+        object-fit: contain;
+        background-color: #000;
+        padding: 5px;
+    }
+
+    /* تنسيق التفاصيل داخل الكارت */
+    .movie-card-body {
+        padding: 15px;
+    }
+
+        .movie-card-body p {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+    /* أزرار الأكشن */
+    .movie-card-footer {
+        padding: 15px;
+        background: #f1f1f1;
+        display: flex;
+        justify-content: space-between;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .btn-custom {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.9rem;
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 50px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+    }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            transform: scale(1.1);
+            box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-custom:active {
+            transform: scale(0.95);
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card movie-card position-relative">
+
+                    <!-- عنوان الفيلم -->
+                    <div class="movie-card-header">
+                        @item.Name
+                    </div>
+                    @if(User.Identity.IsAuthenticated &&User.IsInRole("Admin"))
+                    {
+                        <!-- أيقونة التعديل -->
+                        <a class="edit-icon" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    }
+                   
+
+                    <!-- صورة الفيلم -->
+                    <img src="@item.ImageUrl" alt="@item.Name">
+
+                    <div class="movie-card-body">
+                        <p><strong>Cinema:</strong> @item.Cinema.Name</p>
+                        <p><strong>Category:</strong> @item.MovieCategory</p>
+                        <p><strong>Start Date:</strong> @item.StartDate.ToString("dd MMM yy")</p>
+                        <p><strong>End Date:</strong> @item.EndDate.ToString("dd MMM yy")</p>
+                    </div>
+
+                    <!-- أزرار الأكشن -->
+                    <div class="movie-card-footer">
+                        <a class="btn btn-custom" asp-action="Details" asp-route-id="@item.Id">
+                            <i class="bi bi-eye-fill"></i> Details
+                        </a>
+                        <a class="btn btn-custom @((DateTime.Now > item.EndDate) ? "disabled" : "")"
+                           asp-controller="Orders"
+                           asp-action="AddItemToShoppingCart"
+                           asp-route-id="@item.Id">
+                            <i class="bi bi-cart-plus"></i> Buy @item.Price.ToString("c")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@await Html.PartialAsync("_CreateItem", "Movies")

@@ -1,0 +1,71 @@
+﻿@model Actor
+
+@{
+    ViewData["Title"] = "Update Actor";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-3">
+        <h1 class="text-center mb-4">Update Actor</h1>
+
+        <form asp-action="Edit" method="post">
+            <div class="form-group mb-4 text-center">
+                <img id="ProfilePicturePreview" class="border border-info rounded-circle shadow-lg d-none"
+                     style="max-width: 150px; height: 150px; object-fit: cover;"
+                     alt="Profile Picture" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="ProfilePicUrl" class="control-label mb-2"></label>
+                <input asp-for="ProfilePicUrl" class="form-control" id="ProfilePictureUrl" />
+                <span asp-validation-for="ProfilePicUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="FullName" class="control-label mb-2"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Biography" class="control-label mb-2"></label>
+                <textarea asp-for="Biography" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Biography" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-center mt-3">
+                <input type="submit" value="Update" class="btn btn-outline-success float-right" />
+                <a class="btn btn-outline-secondary" asp-action="Index">Show All</a>
+            </div>
+        </form>
+
+        <!-- عرض البوستر أسفل الفورم -->
+        <div class="text-center mt-4">
+            <h5>Poster Preview</h5>
+            <img id="PosterPreview" class="border border-secondary rounded shadow-lg d-none"
+                 style="max-width: 250px; height: auto; object-fit: cover;" alt="Poster Preview" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var imageUrl = $("#ProfilePictureUrl").val().trim();
+
+            if (imageUrl !== "") {
+                $("#ProfilePicturePreview, #PosterPreview").attr("src", imageUrl).removeClass("d-none");
+            }
+
+            $("#ProfilePictureUrl").on("input", function () {
+                var newUrl = $(this).val().trim();
+
+                if (newUrl !== "") {
+                    $("#ProfilePicturePreview, #PosterPreview").attr("src", newUrl).removeClass("d-none");
+                } else {
+                    $("#ProfilePicturePreview, #PosterPreview").addClass("d-none");
+                }
+            });
+        });
+    </script>
+}

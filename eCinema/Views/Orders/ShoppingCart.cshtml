@@ -1,0 +1,186 @@
+﻿@using eCinema.Data.ViewModels
+@model ShoppingCartVM
+
+@{
+    ViewData["Title"] = "Shopping Cart Summary";
+}
+
+<div class="container mt-5">
+    <div class="col-md-8 offset-md-2">
+        <div class="text-center mb-4">
+            <h2 class="title">🛒 Your Shopping Cart Summary</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover text-center custom-table">
+                <thead>
+                    <tr>
+                        <th>Selected Amount</th>
+                        <th>Movie</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ShoppingCart.ShoppingCartItem)
+                    {
+                        <tr>
+                            <td class="align-middle">@item.Amount</td>
+                            <td class="align-middle">@item.Movie.Name</td>
+                            <td class="align-middle">@((item.Amount * item.Movie.Price).ToString("c"))</td>
+                            <td class="align-middle">
+                                <a class="text-danger action-btn" asp-controller="Orders" asp-action="RemoveItemFromShoppingCart" asp-route-id="@item.Movie.Id">
+                                    <i class="bi bi-cart-dash"></i>
+                                </a>
+                                <a class="text-success action-btn" asp-controller="Orders" asp-action="AddItemToShoppingCart" asp-route-id="@item.Movie.Id">
+                                    <i class="bi bi-cart-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="font-weight-bold">
+                    <tr>
+                        <td colspan="2"></td>
+                        <td><b>Total:</b></td>
+                        <td>@Model.ShoppingCartTotal.ToString("c")</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        @* <div class="text-center mt-4 d-flex justify-content-center align-items-center gap-3">
+            <div id="paypal-btn"></div> *@
+
+
+        <div class="d-flex justify-content-between mt-3">
+            <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Movies">
+                <i class="bi bi-cart-plus"></i> Add More Items
+            </a>
+            |
+            <a class="btn text-white px-4" asp-action="CompleteOrder" style="background-color: #007bff; border-radius: 8px; padding: 10px 20px;">
+                <i class="bi bi-check-circle"></i> Complete Order
+            </a>
+            @* <div id="paypal-btn"></div> *@
+
+
+        </div>
+
+    </div>
+</div>
+</div>
+
+<style>
+    /* تحسين تصميم العنوان */
+    .title {
+        font-size: 26px;
+        font-weight: bold;
+        color: #0072ff;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* تحسين الجدول */
+    .custom-table {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+        .custom-table th {
+            background: #0072ff;
+            color: white;
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        .custom-table tbody tr {
+            transition: background 0.3s;
+        }
+
+            .custom-table tbody tr:hover {
+                background: rgba(0, 114, 255, 0.1);
+            }
+
+    /* تصميم الأزرار */
+    .btn-custom {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 50px;
+        transition: all 0.3s ease-in-out;
+        text-decoration: none;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            transform: scale(1.08);
+        }
+
+    /* تحسين الأيقونات */
+    .action-btn {
+        font-size: 18px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .action-btn:hover {
+            transform: scale(1.2);
+        }
+
+</style>
+
+@section Scripts {
+
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+    <script>
+
+        let _total = @Html.Raw(Model.ShoppingCartTotal);
+
+        paypal.Button.render({
+            //Configure environment
+            env: 'sandbox',
+            client: {
+                sandbox: 'AfIU_PrHe5HDGIxyHBl8af-YqwOn3pLQHXij0n1Kanylf_5xrGQKTSQ6PwDGn8wLMzGYAxvTcYvVQfGq'
+            },
+
+            //Customize button
+            locale: 'en_US',
+            style: {
+                size: 'small',
+                color: 'gold',
+                shape: 'pill'
+            },
+            commit: true,
+
+            //Set up a payment
+            payment: function (data, actions) {
+                return actions.payment.create({
+                    transactions: [{
+                        amount: {
+                            total: _total,
+                            currency: 'USD'
+                        }
+                    }]
+                });
+            },
+
+            //Execute the payment
+            onAuthorize: function (data, actions) {
+                return actions.payment.execute().then(function () {
+                    var url = '@Url.Action("CompleteOrder", "Orders", new { })';
+                    window.location.href = url;
+                });
+            }
+
+        }, '#paypal-btn')
+    </script>
+}
+
